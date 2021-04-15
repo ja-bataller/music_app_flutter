@@ -82,12 +82,12 @@ class MusicPlayerState extends State<MusicPlayer> {
         title: Text('Now Playing', style: TextStyle(color: Colors.white)),
       ),
       body: Container(
-        margin: EdgeInsets.fromLTRB(5, 57, 5, 0),
+        margin: EdgeInsets.fromLTRB(8, 30, 8, 0),
         child: Column(children: <Widget>[
           Center(
             child: Container(
-              width: 250.0,
-              height: 250.0,
+              width: 280.0,
+              height: 280.0,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30.0),
                   image: DecorationImage(
@@ -112,7 +112,7 @@ class MusicPlayerState extends State<MusicPlayer> {
             child: Text(
               widget.songInfo.artist,
               style: TextStyle(
-                  color: Colors.grey,
+                  color: Colors.grey[700],
                   fontSize: 15.0,
                   fontWeight: FontWeight.w500),
             ),

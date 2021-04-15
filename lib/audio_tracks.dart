@@ -81,9 +81,17 @@ class _TracksState extends State<AudioTracks> {
       body: songs.isEmpty == true
           ? Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("No Music Found"),
                 Image.asset('assets/tuzki.gif'),
+                Text(
+                  "No Music Found",
+                  style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.w600),
+                ),
               ],
             ),
           )
