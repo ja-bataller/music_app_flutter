@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:music_player/media_btn.dart';
 import 'package:music_player/music_player.dart';
 
 class AudioTracks extends StatefulWidget {
@@ -45,9 +46,9 @@ class _TracksState extends State<AudioTracks> {
   }
 
   void searchTracks(query) async {
-    List <SongInfo> allTracks = await audioQuery.getSongs();
-    List <SongInfo> searched = await audioQuery.searchSongs(query: query);
-    if(query.isNotEmpty && searched.isNotEmpty) {
+    List<SongInfo> allTracks = await audioQuery.getSongs();
+    List<SongInfo> searched = await audioQuery.searchSongs(query: query);
+    if (query.isNotEmpty && searched.isNotEmpty) {
       setState(() {
         songs.clear();
         songs.addAll(searched);
@@ -64,81 +65,127 @@ class _TracksState extends State<AudioTracks> {
         return;
       });
     }
-
   }
 
   Widget build(context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey[800],
-        leading: Icon(Icons.music_note, color: Colors.blueAccent),
-        title: Text('Music App',
-            style: TextStyle(color: Colors.white),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Color(0xff141414),
+        body: songs.isEmpty == true
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: AssetImage('assets/tuzki.gif'),
+                      radius: 100.0,
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "No music found",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25.0,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              )
+            : Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: TextField(
+                      style: TextStyle(color: Colors.white),
+                      onChanged: (value) {
+                        searchTracks(value);
+                      },
+                      controller: editingController,
+                      decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(25.0),
+                            ),
+                            borderSide:
+                                BorderSide(width: 1, color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(25.0),
+                            ),
+                            borderSide:
+                                BorderSide(width: 1, color: Colors.blueGrey),
+                          ),
+                          labelText: "Search Audio Title",
+                          labelStyle:
+                              TextStyle(fontSize: 20.0, color: Colors.grey),
+                          hintText: "Search",
+                          hintStyle:
+                              TextStyle(fontSize: 20.0, color: Colors.white),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Colors.lightBlueAccent,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(25.0),
+                            ),
+                          )),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => Divider(),
+                      itemCount: songs.length,
+                      itemBuilder: (context, index) => ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: songs[index].albumArtwork == null
+                              ? AssetImage('assets/disc.png')
+                              : FileImage(File(songs[index].albumArtwork)),
+                        ),
+                        title: Text(
+                          songs[index].title,
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        subtitle: Text(
+                          songs[index].artist,
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        onTap: () {
+                          currentIndex = index;
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => MusicPlayer(
+                                  changeTrack: changeTrack,
+                                  songInfo: songs[currentIndex],
+                                  key: key)));
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.grey[900],
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.black,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.playlist_play),
+              label: 'Tracks',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.play_circle_filled_sharp),
+              label: "Playing",
+            ),
+          ],
         ),
-        centerTitle: true,
-
-      ),
-      body: songs.isEmpty == true
-          ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset('assets/tuzki.gif'),
-                Text(
-                  "No Music Found",
-                  style: TextStyle(
-                      color: Colors.grey[800],
-                      fontSize: 25.0,
-                      fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          )
-          :
-      Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: TextField(
-              onChanged: (value) {
-                searchTracks(value);
-              },
-              controller: editingController,
-              decoration: InputDecoration(
-                labelText: "Search Audio Title",
-                hintText: "Search",
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                )
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView.separated(
-              separatorBuilder: (context, index) => Divider(),
-              itemCount: songs.length,
-              itemBuilder: (context, index) => ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: songs[index].albumArtwork == null
-                      ? AssetImage('assets/disc.png')
-                      : FileImage(File(songs[index].albumArtwork)),
-                ),
-                title: Text(songs[index].title),
-                subtitle: Text(songs[index].artist),
-                onTap: () {
-                  currentIndex = index;
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MusicPlayer(
-                          changeTrack: changeTrack,
-                          songInfo: songs[currentIndex],
-                          key: key)));
-                },
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
