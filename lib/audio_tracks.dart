@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_query/flutter_audio_query.dart';
-import 'package:music_player/media_btn.dart';
 import 'package:music_player/music_player.dart';
-
 class AudioTracks extends StatefulWidget {
   _TracksState createState() => _TracksState();
 }
@@ -97,6 +95,21 @@ class _TracksState extends State<AudioTracks> {
             : Column(
                 children: [
                   Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 30, 0, 5),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        child: Text(
+                            "TRACKS",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 30.0,
+                                fontWeight: FontWeight.bold
+                            )),
+                      ),
+                    ),
+                  ),
+                  Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: TextField(
                       style: TextStyle(color: Colors.white),
@@ -137,55 +150,45 @@ class _TracksState extends State<AudioTracks> {
                     ),
                   ),
                   Expanded(
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) => Divider(),
-                      itemCount: songs.length,
-                      itemBuilder: (context, index) => ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: songs[index].albumArtwork == null
-                              ? AssetImage('assets/disc.png')
-                              : FileImage(File(songs[index].albumArtwork)),
-                        ),
-                        title: Text(
-                          songs[index].title,
-                          style: TextStyle(
-                            color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: ListView.builder(
+                        itemCount: songs.length,
+                        itemBuilder: (context, index) => Card(
+                          color: Colors.grey[900],
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: songs[index].albumArtwork == null
+                                  ? AssetImage('assets/disc.png')
+                                  : FileImage(File(songs[index].albumArtwork)),
+                            ),
+                            title: Text(
+                              songs[index].title,
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            subtitle: Text(
+                              songs[index].artist,
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            onTap: () {
+                              currentIndex = index;
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => MusicPlayer(
+                                      changeTrack: changeTrack,
+                                      songInfo: songs[currentIndex],
+                                      key: key)));
+                            },
                           ),
                         ),
-                        subtitle: Text(
-                          songs[index].artist,
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        onTap: () {
-                          currentIndex = index;
-                          Navigator.of(context).pushReplacement(MaterialPageRoute(
-                              builder: (context) => MusicPlayer(
-                                  changeTrack: changeTrack,
-                                  songInfo: songs[currentIndex],
-                                  key: key)));
-                        },
                       ),
                     ),
                   ),
                 ],
               ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.grey[900],
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.black,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.playlist_play),
-              label: 'Tracks',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.play_circle_filled_sharp),
-              label: "Playing",
-            ),
-          ],
-        ),
       ),
     );
   }

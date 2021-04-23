@@ -70,124 +70,139 @@ class MusicPlayerState extends State<MusicPlayer> {
   }
 
   Widget build(context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[300],
-      body: Container(
-        margin: EdgeInsets.fromLTRB(8, 30, 8, 0),
-        child: Column(children: <Widget>[
-          Center(
-            child: Container(
-              width: 280.0,
-              height: 280.0,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30.0),
-                  image: DecorationImage(
-                    image: widget.songInfo.albumArtwork == null
-                        ? AssetImage('assets/disc.gif')
-                        : FileImage(File(widget.songInfo.albumArtwork)),
-                  )),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-            child: Text(
-              widget.songInfo.title,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 33),
-            child: Text(
-              widget.songInfo.artist,
-              style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.w500),
-            ),
-          ),
-          Slider(
-            inactiveColor: Colors.black12,
-            activeColor: Colors.grey[800],
-            min: minimumValue,
-            max: maximumValue,
-            value: currentValue,
-            onChanged: (value) {
-              currentValue = value;
-              player.seek(Duration(milliseconds: currentValue.round()));
-            },
-          ),
-          Container(
-            transform: Matrix4.translationValues(0, -15, 0),
-            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(currentTime,
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500)),
-                Text(endTime,
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500))
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Color(0xff141414),
+        appBar: AppBar(
+          backgroundColor: Color(0xff141414),
+          elevation: 0,
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: Icon(Icons.arrow_back_ios_sharp, color: Colors.blueAccent)),
+        ),
+        body: Container(
+          margin: EdgeInsets.fromLTRB(8, 30, 8, 0),
+          child: Column(children: <Widget>[
+            Center(
               child: Container(
+                width: 280.0,
+                height: 280.0,
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30.0),
-                      topRight: Radius.circular(30.0),
-                      bottomRight: Radius.circular(30.0),
-                      bottomLeft: Radius.circular(30.0),
+                    borderRadius: BorderRadius.circular(30.0),
+                    image: DecorationImage(
+                      image: widget.songInfo.albumArtwork == null
+                          ? AssetImage('assets/disc.gif')
+                          : FileImage(File(widget.songInfo.albumArtwork)),
                     )),
-                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    GestureDetector(
-                      child: Icon(Icons.skip_previous,
-                          color: Colors.grey[800], size: 55),
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () {
-                        widget.changeTrack(false);
-                      },
-                    ),
-                    GestureDetector(
-                      child: Icon(
-                          isPlaying
-                              ? Icons.pause_circle_filled_rounded
-                              : Icons.play_circle_fill_rounded,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: Text(
+                widget.songInfo.title,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 6, 0, 25),
+              child: Text(
+                widget.songInfo.artist,
+                style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+            Slider(
+              inactiveColor: Colors.grey,
+              activeColor: Colors.lightBlueAccent,
+              min: minimumValue,
+              max: maximumValue,
+              value: currentValue,
+              onChanged: (value) {
+                currentValue = value;
+                player.seek(Duration(milliseconds: currentValue.round()));
+              },
+            ),
+            Container(
+              transform: Matrix4.translationValues(0, -15, 0),
+              margin: EdgeInsets.fromLTRB(15, 10, 15, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(currentTime,
+                      style: TextStyle(
                           color: Colors.grey,
-                          size: 85),
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () {
-                        changeStatus();
-                      },
-                    ),
-                    GestureDetector(
-                      child:
-                          Icon(Icons.skip_next, color: Colors.black, size: 55),
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () {
-                        widget.changeTrack(true);
-                      },
-                    ),
-                  ],
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w500)),
+                  Text(endTime,
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w500))
+                ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.grey[800],
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        topRight: Radius.circular(30.0),
+                        bottomRight: Radius.circular(30.0),
+                        bottomLeft: Radius.circular(30.0),
+                      )),
+                  margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        child: Icon(Icons.skip_previous,
+                            color: Colors.grey[300], size: 30),
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          widget.changeTrack(false);
+                        },
+                      ),
+                      GestureDetector(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                          child: Icon(
+                              isPlaying
+                                  ? Icons.pause_circle_filled_rounded
+                                  : Icons.play_circle_fill_rounded,
+                              color: Colors.white,
+                              size: 80),
+                        ),
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          changeStatus();
+                        },
+                      ),
+                      GestureDetector(
+                        child:
+                            Icon(Icons.skip_next, color: Colors.grey[300], size: 30),
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          widget.changeTrack(true);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+          ]
           ),
-        ]),
+        ),
       ),
     );
   }
