@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="johnanthonybataller.music_player">
    <application
-        android:label="Music Player"
+        android:label="Audioology"
         android:icon="@drawable/icon">
         <activity
             android:name=".MainActivity"

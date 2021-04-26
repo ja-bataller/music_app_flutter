@@ -1,19 +1,20 @@
+// FLUTTER PACKAGE
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+
+// EXTERNAL PACKAGE USED - PUB.DEV
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:music_player/audio_tracks.dart';
-
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  // THIS WIDGET IS THE ROOT OF THE APPLICATION
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Music Player',
       home: MyHomePage(),
     );
   }
@@ -34,6 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Duration(seconds: 2),
       () => Navigator.pushReplacement(
         context,
+        // GO TO AUDIO TRACKS PAGE
         MaterialPageRoute(builder: (context) => AudioTracks()),
       ),
     );
@@ -48,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Center(
+            // SPIN KIT - LOADER
             child: SpinKitWave(
               color: Color(0xffa0eef3),
               size: 100.0,

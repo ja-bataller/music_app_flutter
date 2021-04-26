@@ -1,12 +1,15 @@
+// FLUTTER PACKAGE
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+
+// EXTERNAL PACKAGE USED - FROM PUB.DEV
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:just_audio/just_audio.dart';
 
 class MusicPlayer extends StatefulWidget {
   SongInfo songInfo;
   Function changeTrack;
+
   final GlobalKey<MusicPlayerState> key;
   MusicPlayer({this.songInfo, this.changeTrack, this.key}) : super(key: key);
   MusicPlayerState createState() => MusicPlayerState();
@@ -16,6 +19,7 @@ class MusicPlayerState extends State<MusicPlayer> {
   double minimumValue = 0.0, maximumValue = 0.0, currentValue = 0.0;
   String currentTime = '', endTime = '';
   bool isPlaying = false;
+
   final AudioPlayer player = AudioPlayer();
 
   void initState() {
@@ -23,11 +27,13 @@ class MusicPlayerState extends State<MusicPlayer> {
     setSong(widget.songInfo);
   }
 
+  // DISPOSE FUNCTION NULL SAFETY
   void dispose() {
     super.dispose();
     player?.dispose();
   }
 
+  // FUNCTION TO GET THE DETAILS OF THE AUDIO TRACK
   void setSong(SongInfo songInfo) async {
     widget.songInfo = songInfo;
     await player.setUrl(widget.songInfo.uri);
@@ -50,6 +56,7 @@ class MusicPlayerState extends State<MusicPlayer> {
     });
   }
 
+  // FUNCTION TO KNOW IF THERE IS A SONG PLAYING
   void changeStatus() {
     setState(() {
       isPlaying = !isPlaying;
@@ -60,7 +67,7 @@ class MusicPlayerState extends State<MusicPlayer> {
       player.pause();
     }
   }
-
+  // FUNCTION TO GET THE DURATION OF THE AUDIO TRACK
   String getDuration(double value) {
     Duration duration = Duration(milliseconds: value.round());
 
@@ -75,6 +82,8 @@ class MusicPlayerState extends State<MusicPlayer> {
         backgroundColor: Color(0xff141414),
         appBar: AppBar(
           backgroundColor: Color(0xff141414),
+          title: Text("Now Playing"),
+          centerTitle: true,
           elevation: 0,
           leading: IconButton(
               onPressed: () {
@@ -166,7 +175,7 @@ class MusicPlayerState extends State<MusicPlayer> {
                     children: [
                       GestureDetector(
                         child: Icon(Icons.skip_previous,
-                            color: Colors.grey[300], size: 30),
+                            color: Colors.grey[300], size: 35),
                         behavior: HitTestBehavior.translucent,
                         onTap: () {
                           widget.changeTrack(false);
@@ -174,7 +183,7 @@ class MusicPlayerState extends State<MusicPlayer> {
                       ),
                       GestureDetector(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                           child: Icon(
                               isPlaying
                                   ? Icons.pause_circle_filled_rounded
@@ -189,7 +198,7 @@ class MusicPlayerState extends State<MusicPlayer> {
                       ),
                       GestureDetector(
                         child:
-                            Icon(Icons.skip_next, color: Colors.grey[300], size: 30),
+                            Icon(Icons.skip_next, color: Colors.grey[300], size: 35),
                         behavior: HitTestBehavior.translucent,
                         onTap: () {
                           widget.changeTrack(true);

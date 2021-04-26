@@ -1,21 +1,24 @@
+// FLUTTER PACKAGE
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+// EXTERNAL PACKAGE USED - FROM PUB.DEV
 import 'package:flutter_audio_query/flutter_audio_query.dart';
 import 'package:music_player/music_player.dart';
+
 class AudioTracks extends StatefulWidget {
   _TracksState createState() => _TracksState();
 }
 
 class _TracksState extends State<AudioTracks> {
   final FlutterAudioQuery audioQuery = FlutterAudioQuery();
-
-  List<SongInfo> songs = [];
-  int currentIndex = 0;
-
   final GlobalKey<MusicPlayerState> key = GlobalKey<MusicPlayerState>();
+
   TextEditingController editingController = TextEditingController();
+  List<SongInfo> songs = [];
+  List blankList = [];
+  int currentIndex = 0;
 
   @override
   void initState() {
@@ -23,6 +26,7 @@ class _TracksState extends State<AudioTracks> {
     getTracks();
   }
 
+  // FUNCTION TO GET THE AUDIO TRACKS FROM THE DEVICE
   void getTracks() async {
     songs = await audioQuery.getSongs();
     setState(() {
@@ -30,6 +34,7 @@ class _TracksState extends State<AudioTracks> {
     });
   }
 
+  // FUNCTION TO CHANGE THE AUDIO TRACK - PREVIOUS & NEXT
   void changeTrack(bool isNext) {
     if (isNext) {
       if (currentIndex != songs.length - 1) {
@@ -43,11 +48,25 @@ class _TracksState extends State<AudioTracks> {
     key.currentState.setSong(songs[currentIndex]);
   }
 
+  // FUNCTION TO SEARCH AUDIO TRACKS BY AUDIO TITLE
   void searchTracks(query) async {
     List<SongInfo> allTracks = await audioQuery.getSongs();
     List<SongInfo> searched = await audioQuery.searchSongs(query: query);
+
+    // IF THE QUERY SEARCHED DOESN'T MATCH ANY MUSIC - SHOW MUSIC NOT FOUND
+    if (query.isNotEmpty && searched.isEmpty) {
+      setState(() {
+        blankList.clear();
+        blankList.add("No Audio found");
+        print(songs);
+        return;
+      });
+    }
+
+    // IF THE QUERY SEARCHED FOUND A MUSIC - SHOW ALL THE MATCH MUSIC
     if (query.isNotEmpty && searched.isNotEmpty) {
       setState(() {
+        blankList.clear();
         songs.clear();
         songs.addAll(searched);
         print(songs);
@@ -55,8 +74,11 @@ class _TracksState extends State<AudioTracks> {
         return;
       });
     }
+
+    // IF THE QUERY INPUT IS EMPTY - SHOW ALL THE MUSIC
     if (query.isEmpty) {
       setState(() {
+        blankList.clear();
         songs.clear();
         songs.addAll(allTracks);
         print(songs);
@@ -99,13 +121,11 @@ class _TracksState extends State<AudioTracks> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
-                        child: Text(
-                            "TRACKS",
+                        child: Text("Library",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 30.0,
-                                fontWeight: FontWeight.bold
-                            )),
+                                fontSize: 50.0,
+                                fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ),
@@ -132,10 +152,10 @@ class _TracksState extends State<AudioTracks> {
                             borderSide:
                                 BorderSide(width: 1, color: Colors.blueGrey),
                           ),
-                          labelText: "Search Audio Title",
+                          labelText: "Search",
                           labelStyle:
                               TextStyle(fontSize: 20.0, color: Colors.grey),
-                          hintText: "Search",
+                          hintText: "Title",
                           hintStyle:
                               TextStyle(fontSize: 20.0, color: Colors.white),
                           prefixIcon: Icon(
@@ -152,39 +172,58 @@ class _TracksState extends State<AudioTracks> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: ListView.builder(
-                        itemCount: songs.length,
-                        itemBuilder: (context, index) => Card(
-                          color: Colors.grey[900],
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: songs[index].albumArtwork == null
-                                  ? AssetImage('assets/disc.png')
-                                  : FileImage(File(songs[index].albumArtwork)),
-                            ),
-                            title: Text(
-                              songs[index].title,
-                              style: TextStyle(
-                                color: Colors.white,
+                      child: blankList.isNotEmpty == true
+                          ? ListView.builder(
+                              itemCount: blankList.length,
+                              itemBuilder: (context, index) => Card(
+                                color: Colors.grey[900],
+                                child: ListTile(
+                                  title: Text(
+                                    "No music found",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: songs.length,
+                              itemBuilder: (context, index) => Card(
+                                color: Colors.grey[900],
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: songs[index]
+                                                .albumArtwork ==
+                                            null
+                                        ? AssetImage('assets/disc.png')
+                                        : FileImage(
+                                            File(songs[index].albumArtwork)),
+                                  ),
+                                  title: Text(
+                                    songs[index].title,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    songs[index].artist,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    currentIndex = index;
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) => MusicPlayer(
+                                                changeTrack: changeTrack,
+                                                songInfo: songs[currentIndex],
+                                                key: key)));
+                                  },
+                                ),
                               ),
                             ),
-                            subtitle: Text(
-                              songs[index].artist,
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                            onTap: () {
-                              currentIndex = index;
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => MusicPlayer(
-                                      changeTrack: changeTrack,
-                                      songInfo: songs[currentIndex],
-                                      key: key)));
-                            },
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 ],
